@@ -3,8 +3,8 @@
 App Specifications:
 
 ➡️ User have to pick origin city, destinaiton city and departure date in the first page. <br/>
-➡️ User can search for see the available bus locations.  <br/>
-➡️ That cities are not would be same city.  <br/>
-➡️ Departure date is not would be before the today.
+➡️ User can search to see the available bus locations.  <br/>
+➡️ That cities can not be the same. <br/>
+➡️ Departure date can not be before today.
 
 
