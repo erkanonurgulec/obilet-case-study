@@ -1,0 +1,215 @@
+﻿@model IndexModel
+@{
+    ViewData["Title"] = "Home Page";
+    var date = Model.DepartureDate.HasValue ? Model.DepartureDate.Value.ToString("d") : DateTime.Now.AddDays(1).ToString("d");
+}
+
+<style>
+
+    .index-row {
+        display: inline-grid !important;
+        width: 450px !important;
+    }
+
+    .btn {
+        border-radius: 1rem !important;
+        border: none !important;
+    }
+
+    .elips-btn {
+        font-size: 10px !important;
+    }
+
+    .date-picker {
+        background-color: wheat !important;
+        width: 280px !important;
+    }
+</style>
+
+<br />
+<input type="hidden" id="OriginHidden"/>
+<input type="hidden" id="DestinationHidden"/>
+<input type="hidden" id="DepartureDateHidden"/>
+@*<form asp-controller="Home" asp-action="Index" method="post">*@
+<form>
+
+    <h2>Otobüs Bileti Seçimi</h2>
+    <br />
+    <div class="row index-row" style="margin-bottom:20px !important">
+        <div class="col-lg-4">Nereden</div>
+        <div class="col-lg-8">
+            <div class="form-group">
+                <select id="OriginSelectId" name="OriginSelectId" asp-for="Origin" asp-items="Model.Origins" class="form-control"></select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12" style="padding-left:110px !important;">
+            <span id="SwapButton" class="btn-info btn elips-btn" onclick="SwapButtonClick(this)">Değiştir</span>
+        </div>
+    </div>
+
+    <div class="row index-row">
+        <div class="col-lg-4">Nereye</div>
+        <div class="col-lg-8">
+            <div class="form-group">
+                <select id="DestinationSelectId" name="DestinationSelectId" asp-for="Destination" asp-items="Model.Destinations" class="form-control"></select>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="row index-row">
+        <div class="col-lg-4">Tarih</div>
+        <div class="col-lg-8 " style="padding-right: 15px !important; padding-left: 15px !important; ">
+            @*<input type="text" asp-for="DepartureDate" asp-format="{0:dd MMM yyyy}" class="datepicker" />*@
+            <span style="display:flex !important;">
+                <input class="input-group-text date-picker" type="text" asp-for="DepartureDate" id="datepicker" value="@date" />
+                <span style="display:inline-grid !important;">
+                    <span id="IsCurrentDateBtn" value="@Model.IsCurrentDate" class="btn-info btn elips-btn" onclick="IsCurrentDateBtnClick(this)">Bugün</span>
+                    <span id="IsTomorrowDateBtn" value="@Model.IsTomorrowtDate" class="btn-info btn elips-btn" onclick="IsTomorrowDateBtnClick(this)">Yarın </span>
+                </span>
+            </span>
+
+        </div>
+    </div>
+    <span asp-validation-for="DepartureDate" class="text-danger"></span>
+    <br />
+    <br />
+    <div class="row index-row">
+        <div class="col-sm-12" style="padding-left:60px !important;">
+            <button type="button" class="btn btn-primary" style="width:180px !important;" onclick="SearchButtonClick()">Bileti Bul</button>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts
+    {
+    @*<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap.datepicker-fork/1.3.0/css/datepicker3.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link href="~/lib/select2/css/select2.min.css" rel="stylesheet" />
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/bootstrap.datepicker-fork/1.3.0/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/bootstrap.datepicker-fork/1.3.0/js/locales/bootstrap-datepicker.tr.js"></script>
+    <script src="~/lib/select2/js/select2.full.min.js"></script>
+    <script src="~/lib/select2/js/select2.js"></script>
+
+    <script>
+
+        $(function () {
+
+            $('#datepicker').datepicker({
+                language: 'tr',
+                autoclose: true,
+                todayHighlight: true,
+                orientation: 'top auto',
+                defaultViewDate: 'today',
+                clearBtn: true,
+                startDate: 'today'
+            }).on('changeDate', function (e) {
+            });
+
+            $('select').select2();
+
+            $("select").select2({
+                theme: "bootstrap4",
+                allowClear: true,
+                minimumInputLength: 2
+            });
+
+            if ($('#OriginHidden').val() != '' && $('#OriginHidden').val() != undefined) {
+
+                $("#OriginSelectId").val($('#OriginHidden').val()).trigger('change');
+            }
+
+            if ($('#DestinationHidden').val() != '' && $('#OriginHidden').val() != undefined) {
+
+                $("#DestinationSelectId").val($('#DestinationHidden').val()).trigger('change');
+            }
+
+            if ($('#DepartureDateHidden').val() != '' && $('#OriginHidden').val() != undefined) {
+
+                var date = new Date($('#DepartureDateHidden').val());
+                $('#datepicker').datepicker('setDate', date);
+            }
+
+            $('#IsTomorrowDateBtn').css('background-color', '#0069d9');
+
+            IsTomorrowDateBtnClick = (elm) => {
+                $('#IsCurrentDateBtn').css('background-color', '#17a2b8');
+                $(elm).css('background-color', '#0069d9');
+
+                var tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                $('#datepicker').datepicker('setDate', tomorrow);
+                return true;
+            }
+
+            IsCurrentDateBtnClick = (elm) => {
+                $('#IsTomorrowDateBtn').css('background-color', '#17a2b8');
+                $(elm).css('background-color', '#0069d9');
+
+                $('#datepicker').datepicker('setDate', "new date().GetDate()");
+                return true;
+            }
+
+            SwapButtonClick = (elm) => {
+
+                var destId = $('#DestinationSelectId').val();
+                var orgId = $('#OriginSelectId').val();
+
+                $("#OriginSelectId").val(destId).trigger('change');
+                $("#DestinationSelectId").val(orgId).trigger('change');
+
+                return true;
+            }
+
+            SearchButtonClick = () => {
+
+                var orgId = $('#OriginSelectId').val();
+                var destId = $('#DestinationSelectId').val();
+                var date = $('#datepicker').val();
+
+                var orgName = $('#OriginSelectId').find(':selected').text();
+                var destName = $('#DestinationSelectId').find(':selected').text();
+
+                $('#OriginHidden').val(orgId);
+                $('#DestinationHidden').val(destId);
+                $('#DepartureDateHidden').val(date);
+
+                var data = {};
+
+                data.OriginId = orgId;
+                data.OriginName = orgName;
+                data.DestinationId = destId;
+                data.DestinationName = destName;
+                data.DepartureDate = date;
+
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Home/ValidateIndex',
+                    data: data,
+                    success: function (response) {
+                        if (response && response.result == 'NOTOK') {
+                            alert(response.message);
+                        }
+                        if (response && response.result == 'OK') {
+                            window.location.href = "/Home/JourneyIndex";
+                        }
+                    }
+                });
+
+                return true;
+            }
+
+        });
+    </script>
+}

@@ -1,0 +1,98 @@
+﻿@model List<JourneyModel>
+@{
+    ViewData["Title"] = "Journey Index";
+    var dataCount = Model.Any() ? Model.Count() : 0;
+    var originName = ViewBag.OriginName as string;
+    var destinationName = ViewBag.DestinationName as string;
+    var departureDateLongDate = ViewBag.DepartureDateLongDate as string;
+    //Layout = null;
+}
+
+<br />
+<style>
+
+    a {
+        text-decoration: none;
+        display: inline-block;
+        padding: 8px 16px;
+    }
+
+    a:hover {
+        color: white;
+    }
+
+    .previous {
+        background-color: #0069d9;
+        color: white;
+    }
+
+    .round {
+        border-radius: 50%;
+    }
+
+    body {
+        padding: 2rem 0rem;
+    }
+
+    *, ::after, ::before {
+        box-sizing: unset;
+    }
+
+    .price-badge {
+        float: right;
+        background: red;
+        border-radius: 0.5rem;
+        color: white;
+        text-align: center;
+        width: 35%;
+        font-size: inherit;
+    }
+</style>
+
+<div class="container" style="margin-top: -35px; padding-left: 110px; ">
+
+    <h2 style="padding-left: 15px;">Bulunan Seferler</h2>
+    <nav class="navbar navbar-dark" style="display: inline-block; background-color: #0069d9; padding-left: 10px; width: 310px;">
+        <a href='javascript:history.go(-1)' class="previous round"><</a>
+        <span class="navbar-text">
+            @originName - @destinationName
+        </span>
+        <br />
+        <span class="navbar-text" style=" padding-left: 45px;">
+            @departureDateLongDate
+        </span>
+
+    </nav>
+    <br />
+    <div class="page-item" style="padding-top: 25px; width: auto;">
+        @foreach (var item in Model)
+        {
+            <div class="row">
+                <div class="col-sm-6" style=" padding-bottom: 10px; ">
+                    <div class="card">
+                        <div class="card-body">
+                            <span class="badge price-badge">@item.Price @item.Currency</span>
+
+                            <h6 class="card-title" style="-webkit-text-stroke: medium">
+                                <span>
+                                    Kalkış:
+                                </span>
+                                @item.Departure
+                            </h6>
+                            <h6 class="card-title" style="-webkit-text-stroke: medium">
+                                <span>
+                                    Varış:
+                                </span>
+                                @item.Arrival
+                            </h6>
+
+                            <p class="card-text">@item.Origin - @item.Destiniation</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
